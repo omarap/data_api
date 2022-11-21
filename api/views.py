@@ -21,7 +21,6 @@ def api_root(request, format = None):
       'crops': reverse('crop-list', request = request, format = format)
    })
 
-
 #projected affected person
 class ProjectAffectedPersonList(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
