@@ -20,7 +20,10 @@ class ProjectAffectedPerson(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.id_no}"
-
+    
+    @property
+    def total_value_of_crops(self):
+        return sum(self.value_of_crops)
 
 class ConstructionBuilding(models.Model):
     CONSTRUCTION_TYPES = [
@@ -42,6 +45,11 @@ class ConstructionBuilding(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def value_of_structures(self):
+        return self.size * self.number_of_construction * self.rate
+   
 
 class Tree(models.Model):
     TREE_TYPES= [
@@ -92,6 +100,11 @@ class Tree(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def value_of_trees(self):
+        return self.quantity * self.rate
+   
 
 
 # Class model for crop
@@ -167,7 +180,11 @@ class Crop(models.Model):
 
     def __str__(self):
         return f"{ self.name} { self.pap} { self.quantity}"
-
+    
+    @property
+    def value_of_crops(self):
+        return self.quantity * self.rate
+   
 
 class Land(models.Model):
     LAND_TYPES= (
@@ -207,6 +224,11 @@ class Land(models.Model):
 
     def __str__(self):
         return f"{self.land_type} {  self.pap} "
+
+    @property
+    def value_of_land(self):
+        return self.size * self.rate
+   
 
 
 

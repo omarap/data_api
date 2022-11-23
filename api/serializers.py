@@ -15,7 +15,7 @@ class ConstructionBuildingSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ConstructionBuilding
-        fields = ['pap', 'name','construction_image', 'size', 'number_of_construction','rate', 'created', 'updated']
+        fields = ['pap', 'name','construction_image', 'size', 'number_of_construction','rate', 'value_of_structures','created', 'updated']
 
 
 class CropSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class CropSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crop
         fields = ['name', 'crop_image','description', 'quantity', 'quality', 'rate', 'rating', 
-        'pap','created', 'updated']
+        'pap','value_of_crops','created', 'updated']
 
     def create(self, validated_data):
         """
@@ -44,7 +44,7 @@ class LandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Land
         fields = ['land_type', 'land_image','survey_no', 'pap','tenure', 'size', 'location', 'land_use', 
-                    'land_services', 'rate', 'created', 'updated']
+                    'land_services', 'rate','value_of_land' 'created', 'updated']
 
 class TreeSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
@@ -53,7 +53,7 @@ class TreeSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Tree
-        fields = ['pap', 'name', 'description','tree_image', 'quantity','rate', 'created', 'updated']
+        fields = ['pap', 'name', 'description','tree_image', 'quantity','rate', 'value_of_trees', 'created', 'updated']
 
     def create(self, validated_data):
         """
@@ -70,8 +70,8 @@ class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
     pap_trees= TreeSerializer(many=True, read_only=True)
     class Meta:
         model = ProjectAffectedPerson
-        fields = ['pap_image', 'first_name', 'last_name', 'age', 'address', 
-        'id_no','email','phone_number','pap_crops','pap_lands','pap_trees',
+        fields = ['first_name', 'last_name', 'pap_image','age', 'address', 
+        'id_no','email','phone_number','pap_crops','total_value_of_crops','pap_lands','pap_trees',
         'pap_construction','created', 'updated']
     
     def create(self, validated_data):
