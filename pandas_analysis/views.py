@@ -21,15 +21,19 @@ from rest_framework import status, generics, renderers, filters
 def pandas_analysis_root(request, format = None):
    return Response({
       'papdata': reverse('pap-data', request = request, format = format),
-      'papdata_download': reverse('pap-data-download', request = request, format = format)
+      'papdata_download': reverse('pap-data-download', request = request, format = format),
+      'construction_data_download': reverse('construction-data-download', request = request, format = format),
+      'trees_data_download': reverse('trees-data-download', request = request, format = format),
+      'crops_data_download': reverse('crops-data-download', request = request, format = format),
+      'land_data_download': reverse('land-data-download', request = request, format = format)
    })
 
+#JSON data for project affected person
 class ProjectAffectedPersionJSONView(PandasView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = ProjectAffectedPerson.objects.all()
-    serializer_class = ProjectAffectedPersionPandasSerializer
-    pandas_serializer_class = PandasUnstackedSerializer
+    serializer_class = ProjectAffectedPersonSerializer
     renderer_classes = [JSONOpenAPIRenderer]
     
     def get_queryset(self):
@@ -39,15 +43,13 @@ class ProjectAffectedPersionJSONView(PandasView):
         """
         owner = self.request.user
         return ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
-    
 
-    
+#CSV file download for project affected person    
 class ProjectAffectedPersionPandasView(PandasView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = ProjectAffectedPerson.objects.all()
-    serializer_class = ProjectAffectedPersionPandasSerializer
-    pandas_serializer_class = PandasUnstackedSerializer
+    serializer_class = ProjectAffectedPersonSerializer
     renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
     
     def get_queryset(self):
@@ -66,15 +68,111 @@ class ProjectAffectedPersionPandasView(PandasView):
         else:
             # Default filename from URL (no Content-Disposition header)
             return None
+ 
 
-
-
+#CSV file download for construction details    
+class ConstructionPandasView(PandasView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = ConstructionBuilding.objects.all()
+    serializer_class = ConstructionBuildingSerializer
+    renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
+    
+    def get_queryset(self):
+        """
+        This view should return a list of all the construction
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        return ConstructionBuilding.objects.filter(owner=owner).order_by('-created')
     
 
+    def get_pandas_filename(self, request, format):
+        if format in ('xls', 'xlsx'):
+            # Use custom filename and Content-Disposition header
+            return "Data Export"  # Extension will be appended automatically
+        else:
+            # Default filename from URL (no Content-Disposition header)
+            return None
 
 
-
-
-
+#CSV file download for Tree details    
+class TreePandasView(PandasView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Tree.objects.all()
+    serializer_class = TreeSerializer
+    renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
     
+    def get_queryset(self):
+        """
+        This view should return a list of tress
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        return Tree.objects.filter(owner=owner).order_by('-created')
+    
+
+    def get_pandas_filename(self, request, format):
+        if format in ('xls', 'xlsx'):
+            # Use custom filename and Content-Disposition header
+            return "Data Export"  # Extension will be appended automatically
+        else:
+            # Default filename from URL (no Content-Disposition header)
+            return None
+
+
+#CSV file download for crops   
+class CropPandasView(PandasView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Crop.objects.all()
+    serializer_class = CropSerializer
+    renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
+    
+    def get_queryset(self):
+        """
+        This view should return a list of crops
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        return Crop.objects.filter(owner=owner).order_by('-created')
+    
+
+    def get_pandas_filename(self, request, format):
+        if format in ('xls', 'xlsx'):
+            # Use custom filename and Content-Disposition header
+            return "Data Export"  # Extension will be appended automatically
+        else:
+            # Default filename from URL (no Content-Disposition header)
+            return None
+
+#CSV file download for land details    
+class LandPandasView(PandasView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Land.objects.all()
+    serializer_class = LandSerializer
+    renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
+    
+    def get_queryset(self):
+        """
+        This view should return a list of land
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Land.objects.filter(user=user).order_by('-created')
+    
+
+    def get_pandas_filename(self, request, format):
+        if format in ('xls', 'xlsx'):
+            # Use custom filename and Content-Disposition header
+            return "Data Export"  # Extension will be appended automatically
+        else:
+            # Default filename from URL (no Content-Disposition header)
+            return None
+
+
+
+
 

@@ -8,14 +8,19 @@ class UserPapForeignKey(serializers.SlugRelatedField):
         return ProjectAffectedPerson.objects.filter(owner =  self.context['request'].user).order_by('-created')[:6]
 
 class ConstructionBuildingSerializer(serializers.ModelSerializer):
-    pap = serializers.SlugRelatedField(
-        slug_field='first_name',
-        queryset=ProjectAffectedPerson.objects.all()
+    pap = UserPapForeignKey(
+        slug_field='first_name'
     )
     
     class Meta:
         model = ConstructionBuilding
         fields = ['pap', 'name','construction_image', 'size', 'number_of_construction','rate', 'value_of_structures','created', 'updated']
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Crop` instance, given the validated data.
+        """
+        return ConstructionBuilding.objects.create(**validated_data)
 
 
 class CropSerializer(serializers.ModelSerializer):
@@ -44,7 +49,7 @@ class LandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Land
         fields = ['land_type', 'land_image','survey_no', 'pap','tenure', 'size', 'location', 'land_use', 
-                    'land_services', 'rate','value_of_land' 'created', 'updated']
+                    'land_services', 'rate','value_of_land', 'created', 'updated']
 
 class TreeSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
@@ -73,7 +78,7 @@ class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'pap_image','age', 'address', 
         'id_no','email','phone_number','pap_crops','total_value_of_crops','pap_lands','pap_trees',
         'pap_construction','created', 'updated']
-    
+
     def create(self, validated_data):
         """
         Create and return a new `ProjectAffectedPerson` instance, given the validated data.

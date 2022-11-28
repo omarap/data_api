@@ -92,6 +92,7 @@ class ConstructionBuildingList(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+
     def get_queryset(self):
         """
         This view should return a list of all the project_affected_persons
@@ -101,8 +102,9 @@ class ConstructionBuildingList(generics.ListCreateAPIView):
         return ConstructionBuilding.objects.filter(owner=owner).order_by('-rate')
     
     def perform_create(self, serializer):
+        request = self.request.user
         #serializer holds a django model
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, context={'request': request})
 
 #construction details for construction object with id
 class ConstructionBuildingDetail(generics.RetrieveUpdateDestroyAPIView):
