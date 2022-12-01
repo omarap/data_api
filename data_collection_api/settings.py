@@ -50,10 +50,12 @@ INSTALLED_APPS = [
     'matplotlib',
     'django_pandas',
     'pandas',
+    'rest_framework_latex',
 
 
     'api',
-    'analysis'
+    'analysis',
+    'pandas_analysis',
 ]
 
 REST_FRAMEWORK = {
@@ -80,7 +82,26 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_latex.renderers.LatexRenderer'
     ]
+}
+
+LATEX_RESOURCES = [
+    BASE_DIR / "templates/directory"
+]
+
+
+REST_PANDAS = {
+    "RENDERERS": (
+        "rest_pandas.renderers.PandasHTMLRenderer",
+        "rest_pandas.renderers.PandasCSVRenderer",
+        "rest_pandas.renderers.PandasTextRenderer",
+        "rest_pandas.renderers.PandasJSONRenderer",
+        "rest_pandas.renderers.PandasExcelRenderer",
+        "rest_pandas.renderers.PandasOldExcelRenderer",
+        "rest_pandas.renderers.PandasPNGRenderer",
+        "rest_pandas.renderers.PandasSVGRenderer",
+    ),
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # new

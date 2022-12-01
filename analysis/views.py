@@ -92,7 +92,7 @@ class AverageCropRateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, format=None):
-        average_crop_price = Crop.objects.all().aggregate(Avg('price'))
+        average_crop_price = Crop.objects.all().aggregate(Avg('rate'))
         return Response(average_crop_price)
 
 #Rate difference of crops in the system

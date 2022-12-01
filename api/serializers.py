@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework import *
 from .models import *
+from django.db import models
 
 #function to limit paps to current user i.e. pap owner or view only your created paps
 class UserPapForeignKey(serializers.SlugRelatedField):
@@ -52,7 +53,7 @@ class LandSerializer(serializers.ModelSerializer):
                     'land_services', 'rate','value_of_land', 'created', 'updated']
 
 class TreeSerializer(serializers.ModelSerializer):
-    pap = serializers.SlugRelatedField(
+    pap = UserPapForeignKey(
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
     )
@@ -64,12 +65,14 @@ class TreeSerializer(serializers.ModelSerializer):
         """
         Create and return a new `Tree` instance, given the validated data.
         """
-        pap= ProjectAffectedPerson.objects.filter(owner=self.request.user)
-        Tree.objects.create(pap=pap)
+        Tree.objects.create(**validated_data)
     
+def total_value_crops():
+    return Crop.objects.filter('value_of_crops').count()
 
 class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
     pap_crops = CropSerializer(many=True, read_only=True)
+    total_value_of_crops = total_value_crops
     pap_lands = LandSerializer(many=True, read_only=True)
     pap_construction= ConstructionBuildingSerializer(many=True, read_only=True)
     pap_trees= TreeSerializer(many=True, read_only=True)

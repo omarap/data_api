@@ -155,6 +155,11 @@ class TreeList(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+    def perform_create(self, serializer):
+        owner = self.request.user
+        #serializer holds a django model
+        serializer.save(owner=owner)
+
     def get_queryset(self):
         """
         This view should return a list of all the project_affected_persons
@@ -163,10 +168,7 @@ class TreeList(generics.ListCreateAPIView):
         owner = self.request.user
         return Tree.objects.filter(owner=owner).order_by('-rate')
 
-    def perform_create(self, serializer):
-        owner = self.request.user
-        #serializer holds a django model
-        serializer.save(owner=owner)
+   
     
 #tree details for a tree    
 class TreeDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from api.models import *
 from django.db.models import *
 from pandas_analysis.serializers import *
@@ -10,10 +9,16 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django_pandas.io import read_frame
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics, renderers, filters
+from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework_latex import renderers
+from django.shortcuts import get_object_or_404
+from rest_framework import renderers
+import pandas as pd
+
+
+
 
 # Create your views here.
 #Pandas analysis  root
@@ -22,6 +27,8 @@ def pandas_analysis_root(request, format = None):
    return Response({
       'papdata': reverse('pap-data', request = request, format = format),
       'papdata_download': reverse('pap-data-download', request = request, format = format),
+      'pap_list_pdf': reverse('pap-list-pdf', request = request, format = format),
+      'list_paps': reverse('list-paps', request = request, format = format),
       'construction_data_download': reverse('construction-data-download', request = request, format = format),
       'trees_data_download': reverse('trees-data-download', request = request, format = format),
       'crops_data_download': reverse('crops-data-download', request = request, format = format),
@@ -59,6 +66,11 @@ class ProjectAffectedPersionPandasView(PandasView):
         """
         owner = self.request.user
         return ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
+    
+    def get_data(self, request, *args, **kwargs):
+        return ProjectAffectedPerson.objects.to_stats(
+            index='created',
+        )
     
 
     def get_pandas_filename(self, request, format):
@@ -172,7 +184,52 @@ class LandPandasView(PandasView):
             # Default filename from URL (no Content-Disposition header)
             return None
 
+#PDF Renderer class
+class PDFRenderer(renderers.BaseRenderer):
+    media_type = 'application/pdf'
+    format = 'pdf'
+    charset = None
 
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
 
+#Project Affected Persions PDF view
+class PAPListPDF(viewsets.ViewSet):
+    renderer_classes = [ PDFRenderer ]
 
+    def list(self, request):
+        owner = self.request.user
+        queryset = ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
+        serializer = ProjectAffectedPersonSerializer(queryset, many=True)
+        response_dict = {serializer: 'serializer'}
+        return Response(response_dict, status=200)
+    
+    def retrieve(self, request, pk=None):
+        owner = self.request.user
+        queryset = ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
+        pap = get_object_or_404(queryset, pk=pk)
+        serializer = ProjectAffectedPersonSerializer(pap)
+        response_dict = {serializer: 'serializer'}
+        return Response(response_dict, status=200)
+
+#Pandas API JSON Analysis
+class ListPAPs(PandasView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [JSONOpenAPIRenderer]
+    queryset = ProjectAffectedPerson.objects.all().order_by('-created')
+    serializer_class = ProjectAffectedPersonSerializer
+    
+
+    def paps(self):
+        """
+        This view should return a list of PAPs
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        queryset = ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
+        serializer = ProjectAffectedPersonSerializer(queryset, many=True)
+        df = pd.DataFrame(serializer)
+        pap_description = df.describe()
+        return pap_description
 
