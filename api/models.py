@@ -1,5 +1,6 @@
-from random import choices
 from django.db import models
+from django.db.models import Sum
+from django.core.serializers import serialize
 from django.contrib.auth.models import User
 
 
@@ -21,10 +22,7 @@ class ProjectAffectedPerson(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.id_no}"
     
-    @property
-    def total_value_of_crops(self):
-        return sum(self.value_of_crops)
-
+   
 class ConstructionBuilding(models.Model):
     CONSTRUCTION_TYPES = [
     ('Fire-resistive', 'Fire-resistive'),
@@ -184,6 +182,13 @@ class Crop(models.Model):
     @property
     def value_of_crops(self):
         return self.quantity * self.rate
+    
+    @property
+    def total_value_of_crops(self):
+        total_value = Crop.objects.annotate(total_value_crops =Sum(self.value_of_crops))
+        serialized_sum = serialize('json', total_value)
+        return serialized_sum
+
    
 
 class Land(models.Model):

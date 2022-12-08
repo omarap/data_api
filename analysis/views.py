@@ -11,7 +11,7 @@ from django.http import Http404
 from rest_framework.reverse import reverse
 from rest_framework import status, generics, renderers, filters
 from rest_framework.decorators import api_view
-
+from django.db.models.functions import *
 
 # Create your views here.
 #Analysis  root
@@ -19,6 +19,7 @@ from rest_framework.decorators import api_view
 def Analysis_root(request, format = None):
    return Response({
       'number_of_crops': reverse('number-of-crops', request = request, format = format),
+      'total_crop_value': reverse('total-crop-value', request = request, format = format),
       'crops_rate_total': reverse('total-crops-rate', request = request, format = format),
       'minimum_crop_rate': reverse('minimum-crop-rate', request = request, format = format),
       'maximum_crop_rate': reverse('maximum-crop-rate', request = request, format = format),
@@ -58,6 +59,27 @@ class CropAnalysisView(APIView):
     def get(self, format=None):
         number_of_crops = Crop.objects.all().aggregate(Count('name'))
         return Response(number_of_crops)
+
+#Total value of crops
+#Number of crops in the system
+class TotalCropValueView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Crop.objects.all().order_by('-created')
+    serializer_class = CropSerializer
+
+
+    def get(self, request, id):
+            pap = ProjectAffectedPerson.objects.get(id=id)
+            crop_rate = Crop.objects.all()
+            crop_rate_value = crop_rate.rate = F('rate')
+            crop_quantity = Crop.objects.all()
+            crop_quantity_value = crop_quantity.quantity = F('quantity')
+            crop_value_difference = crop_rate_value * crop_quantity_value
+            owner = self.request.user
+            total_value = Crop.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_crops =Sum(crop_value_difference))
+            return Response(total_value)
+
 
 #Total rate of crops in the system
 class CropRateSumView(APIView):

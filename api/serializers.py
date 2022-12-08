@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework import *
 from .models import *
+from django.core.serializers import serialize
+from django.db.models import Sum
 from django.db import models
 
 #function to limit paps to current user i.e. pap owner or view only your created paps
@@ -29,11 +31,10 @@ class CropSerializer(serializers.ModelSerializer):
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
     )
-    
     class Meta:
         model = Crop
         fields = ['name', 'crop_image','description', 'quantity', 'quality', 'rate', 'rating', 
-        'pap','value_of_crops','created', 'updated']
+        'pap','value_of_crops','total_value_of_crops','created', 'updated']
 
     def create(self, validated_data):
         """
@@ -66,20 +67,17 @@ class TreeSerializer(serializers.ModelSerializer):
         Create and return a new `Tree` instance, given the validated data.
         """
         Tree.objects.create(**validated_data)
-    
-def total_value_crops():
-    return Crop.objects.filter('value_of_crops').count()
 
+    
 class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
     pap_crops = CropSerializer(many=True, read_only=True)
-    total_value_of_crops = total_value_crops
     pap_lands = LandSerializer(many=True, read_only=True)
     pap_construction= ConstructionBuildingSerializer(many=True, read_only=True)
     pap_trees= TreeSerializer(many=True, read_only=True)
     class Meta:
         model = ProjectAffectedPerson
-        fields = ['first_name', 'last_name', 'pap_image','age', 'address', 
-        'id_no','email','phone_number','pap_crops','total_value_of_crops','pap_lands','pap_trees',
+        fields = ['id','first_name', 'last_name', 'pap_image','age', 'address', 
+        'id_no','email','phone_number','pap_crops','pap_lands','pap_trees',
         'pap_construction','created', 'updated']
 
     def create(self, validated_data):
