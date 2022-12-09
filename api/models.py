@@ -182,12 +182,6 @@ class Crop(models.Model):
     @property
     def value_of_crops(self):
         return self.quantity * self.rate
-    
-    @property
-    def total_value_of_crops(self):
-        total_value = Crop.objects.annotate(total_value_crops =Sum(self.value_of_crops))
-        serialized_sum = serialize('json', total_value)
-        return serialized_sum
 
    
 

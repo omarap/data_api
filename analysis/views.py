@@ -61,7 +61,6 @@ class CropAnalysisView(APIView):
         return Response(number_of_crops)
 
 #Total value of crops
-#Number of crops in the system
 class TotalCropValueView(generics.RetrieveAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -80,6 +79,118 @@ class TotalCropValueView(generics.RetrieveAPIView):
             total_value = Crop.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_crops =Sum(crop_value_difference))
             return Response(total_value)
 
+#Total value of trees
+class TotalTreeValueView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = CropSerializer
+    queryset = Tree.objects.all().order_by('-created')
+
+
+    def get(self, request, id):
+            pap = ProjectAffectedPerson.objects.get(id=id)
+            tree_rate = Tree.objects.all()
+            tree_rate_value = tree_rate.rate = F('rate')
+            tree_quantity = Tree.objects.all()
+            tree_quantity_value = tree_quantity.quantity = F('quantity')
+            tree_value_difference = tree_rate_value * tree_quantity_value
+            owner = self.request.user
+            total_value = Tree.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_trees =Sum(tree_value_difference))
+            return Response(total_value)
+
+
+#Total value of Construction
+class TotalConstructionValueView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = ConstructionBuilding.objects.all().order_by('-created')
+    serializer_class = ConstructionBuildingSerializer
+
+
+    def get(self, request, id):
+            pap = ProjectAffectedPerson.objects.get(id=id)
+            construction_rate = ConstructionBuilding.objects.all()
+            construction_rate_value = construction_rate.rate = F('rate')
+            construction_size = ConstructionBuilding.objects.all()
+            construction_size_value = construction_size.size = F('size')
+            number_of_construction = ConstructionBuilding.objects.all()
+            number_of_construction_value = number_of_construction.number_of_construction = F('number_of_construction')
+            construction_value_difference = construction_rate_value * construction_size_value * number_of_construction_value
+            owner = self.request.user
+            total_value = ConstructionBuilding.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_construction =Sum(construction_value_difference))
+            return Response(total_value)
+
+#Total value of Land
+class TotalLandValueView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = LandSerializer
+    queryset = Land.objects.all().order_by('-created')
+
+
+    def get(self, request, id):
+            pap = ProjectAffectedPerson.objects.get(id=id)
+            land_rate = Land.objects.all()
+            land_rate_value = land_rate.rate = F('rate')
+            land_size = Land.objects.all()
+            land_size_value = land_size.size = F('size')
+            land_value_difference = land_rate_value * land_size_value
+            user = self.request.user
+            total_value = Land.objects.filter(user=user, pap=pap).aggregate(total_value_of_land =Sum(land_value_difference))
+            return Response(total_value)
+
+#Award View
+class AwardView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = LandSerializer, CropSerializer, TreeSerializer, ConstructionBuildingSerializer
+    queryset = Crop.objects.all().order_by('-created')
+    queryset = Tree.objects.all().order_by('-created')
+    queryset = Land.objects.all().order_by('-created')
+    queryset = ConstructionBuilding.objects.all().order_by('-created')
+
+    def get(self, request, id):
+        owner = self.request.user
+        user = self.request.user
+        pap = ProjectAffectedPerson.objects.get(id=id)
+        #crops
+        crop_rate = Crop.objects.all()
+        crop_rate_value = crop_rate.rate = F('rate')
+        crop_quantity = Crop.objects.all()
+        crop_quantity_value = crop_quantity.quantity = F('quantity')
+        crop_value_difference = crop_rate_value * crop_quantity_value
+        total_value_crops = Crop.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_crops =Sum(crop_value_difference))
+        #trees
+        tree_rate = Tree.objects.all()
+        tree_rate_value = tree_rate.rate = F('rate')
+        tree_quantity = Tree.objects.all()
+        tree_quantity_value = tree_quantity.quantity = F('quantity')
+        tree_value_difference = tree_rate_value * tree_quantity_value
+        total_value_trees = Tree.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_trees =Sum(tree_value_difference))
+        #construction
+        construction_rate = ConstructionBuilding.objects.all()
+        construction_rate_value = construction_rate.rate = F('rate')
+        construction_size = ConstructionBuilding.objects.all()
+        construction_size_value = construction_size.size = F('size')
+        number_of_construction = ConstructionBuilding.objects.all()
+        number_of_construction_value = number_of_construction.number_of_construction = F('number_of_construction')
+        construction_value_difference = construction_rate_value * construction_size_value * number_of_construction_value
+        total_value_construction = ConstructionBuilding.objects.filter(owner=owner, pap=pap).aggregate(total_value_of_construction =Sum(construction_value_difference))
+        #land
+        land_rate = Land.objects.all()
+        land_rate_value = land_rate.rate = F('rate')
+        land_size = Land.objects.all()
+        land_size_value = land_size.size = F('size')
+        land_value_difference = land_rate_value * land_size_value
+        total_value_land = Land.objects.filter(user=user, pap=pap).aggregate(total_value_of_land =Sum(land_value_difference))
+        #Award
+        crops_value = total_value_crops.values()
+        trees_value = total_value_trees.values()
+        construction_value = total_value_construction.values()
+        land_value = total_value_land.values()
+        
+        award = sum(crops_value) + sum(trees_value) + sum(construction_value) + sum(land_value)
+        return Response(award)
 
 #Total rate of crops in the system
 class CropRateSumView(APIView):
