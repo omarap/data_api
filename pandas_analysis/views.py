@@ -14,10 +14,11 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework_latex import renderers
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from rest_framework import renderers
 import pandas as pd
-
-
+import numpy as np
+from django.core import serializers
 
 
 # Create your views here.
@@ -59,7 +60,7 @@ class ProjectAffectedPersionPandasView(PandasView):
     serializer_class = ProjectAffectedPersonSerializer
     renderer_classes = [PandasCSVRenderer, PandasExcelRenderer]
     
-    def get_queryset(self):
+    def get_queryset(self, request):
         """
         This view should return a list of all the project_affected_persons
         for the currently authenticated user.
@@ -213,23 +214,24 @@ class PAPListPDF(viewsets.ViewSet):
         return Response(response_dict, status=200)
 
 #Pandas API JSON Analysis
-class ListPAPs(PandasView):
+class ListPAPs(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    renderer_classes = [JSONOpenAPIRenderer]
     queryset = ProjectAffectedPerson.objects.all().order_by('-created')
     serializer_class = ProjectAffectedPersonSerializer
     
-
-    def paps(self):
-        """
-        This view should return a list of PAPs
-        for the currently authenticated user.
-        """
-        owner = self.request.user
-        queryset = ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
-        serializer = ProjectAffectedPersonSerializer(queryset, many=True)
-        df = pd.DataFrame(serializer)
-        pap_description = df.describe()
-        return pap_description
+    try:
+        def list(self, request, format=None):
+            """
+            This view should return a list of PAPs
+            for the currently authenticated user.
+            """
+            owner = self.request.user
+            pap_data = ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
+            df = pd.DataFrame(pap_data)
+            pap_description = df.describe()
+            return Response(pap_description)
+    except ProjectAffectedPerson.DoesNotExist:
+        raise Http404
+    
 

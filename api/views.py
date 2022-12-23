@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from api.models import *
 from api.serializers import *
+from rest_framework.renderers import *
+from rest_framework import viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +12,7 @@ from rest_framework.reverse import reverse
 import django_filters.rest_framework
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import *
 
 @api_view(['GET'])
 def api_root(request, format = None):
@@ -61,15 +64,15 @@ class ProjectAffectedPersonDetail(generics.RetrieveUpdateDestroyAPIView):
         return ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
 
 #project affected person details with name
-class ProjectAffectedPersonName(generics.RetrieveUpdateDestroyAPIView):
+class ProjectAffectedPersonNameView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = ProjectAffectedPerson.objects.all().order_by('-created')
     serializer_class = ProjectAffectedPersonSerializer
 
     try:
-        def get(self, id_no):
-            pap = ProjectAffectedPerson.objects.get(id_no=id_no)
+        def list(self, request, first_name):
+            pap = ProjectAffectedPerson.objects.get(first_name=first_name)
             serializer = ProjectAffectedPersonSerializer(pap)
             return Response(serializer.data)
     except ProjectAffectedPerson.DoesNotExist:
@@ -124,20 +127,29 @@ class ConstructionBuildingDetail(generics.RetrieveUpdateDestroyAPIView):
         return ConstructionBuilding.objects.filter(owner=owner).order_by('-rate')
 
 #construction details details with name
-class ConstructionDetails(generics.RetrieveUpdateDestroyAPIView):
+class ConstructionDetailNameView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = ConstructionBuilding.objects.all().order_by('-rate')
     serializer_class = ConstructionBuildingSerializer
 
     try:
-        def get(self, name):
-            construction = ConstructionBuilding.objects.get(name=name)
-            serializer = ConstructionBuildingSerializer(construction)
+        def list(self, request, name):
+            construction = ConstructionBuilding.objects.filter(name=name)
+            serializer = ConstructionBuildingSerializer(construction, many=True)
             return Response(serializer.data)
     except ConstructionBuilding.DoesNotExist:
             raise Http404
 
+    #count number of construction names
+    try:
+        def count_construction(self, request,name):
+            construction_count = ConstructionBuilding.objects.filter(name=name).order_by('-created').aggregate(Count('name'))
+            return Response(construction_count)
+    except ConstructionBuilding.DoesNotExist:
+            raise Http404
+            
+    
     def get_queryset(self):
         """
         This view should return a list of all the construction details
@@ -186,19 +198,28 @@ class TreeDetail(generics.RetrieveUpdateDestroyAPIView):
         return Tree.objects.filter(owner=owner).order_by('-rate')
 
 #Tree details details with name
-class TreeDetails(generics.RetrieveUpdateDestroyAPIView):
+class TreeDetailNameView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Tree.objects.all().order_by('-rate')
     serializer_class = TreeSerializer
-
+    #tree details details with name
     try:
-        def trees(self, name):
+        def list(self, request, name):
             tree = Tree.objects.filter(name=name).order_by('-created')
             serializer = TreeSerializer(tree, many=True)
             return Response(serializer.data)
     except Tree.DoesNotExist:
             raise Http404
+
+    #count number of tree names
+    try:
+        def count_tree(self, request,name):
+            trees_count = Tree.objects.filter(name=name).order_by('-created').aggregate(Count('name'))
+            return Response(trees_count)
+    except Tree.DoesNotExist:
+            raise Http404
+            
 
     def get_queryset(self):
         """
@@ -249,19 +270,29 @@ class CropDetail(generics.RetrieveUpdateDestroyAPIView):
         return Crop.objects.filter(owner=owner).order_by('-rating')
 
 #crop details details with name
-class CropDetails(generics.RetrieveUpdateDestroyAPIView):
+class CropDetailNameView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Crop.objects.all()
     serializer_class = CropSerializer
 
     try:
-        def get(self, name):
-            crop = Crop.objects.get(name=name)
-            serializer = CropSerializer(crop)
+        def list(self,request, name):
+            crop = Crop.objects.filter(name=name)
+            serializer = CropSerializer(crop, many=True)
             return Response(serializer.data)
     except Crop.DoesNotExist:
             raise Http404
+
+    #count number of crop names
+    try:
+        def count_crops(self, request,name):
+            crops_count = Crop.objects.filter(name=name).order_by('-created').aggregate(Count('name'))
+            return Response(crops_count)
+    except Crop.DoesNotExist:
+            raise Http404
+            
+
 
     def get_queryset(self):
         """
@@ -273,18 +304,17 @@ class CropDetails(generics.RetrieveUpdateDestroyAPIView):
         
 #pap_crops
 # ViewSets define the view behavior.
-class PapCrop(APIView):
+class PapCrop(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    
     """
     View to list all crops belonging to a pap in the system.
     """
     try:
-        def get(self, request,first_name,format=None):
+        def list(self, request, first_name):
             pap = ProjectAffectedPerson.objects.get(first_name=first_name)
-            pap_crops = Crop.objects.filter(pap=pap)
+            pap_crops = Crop.objects.filter(pap=pap).order_by('-created')
             serializer = CropSerializer(pap_crops, many=True)
             return Response(serializer.data)
     except Crop.DoesNotExist:
@@ -331,17 +361,25 @@ class LandDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LandSerializer
 
 #land details details with name
-class LandDetails(generics.RetrieveUpdateDestroyAPIView):
+class LandDetailNameView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Land.objects.all().order_by('-rate')
     serializer_class = ConstructionBuildingSerializer
 
     try:
-        def get(self, land_type):
-            land = Land.objects.get(land_type=land_type)
-            serializer = LandSerializer(land)
+        def list(self, request, land_type):
+            land = Land.objects.filter(land_type=land_type)
+            serializer = LandSerializer(land, many=True)
             return Response(serializer.data)
+    except Land.DoesNotExist:
+            raise Http404
+    
+    #count number of land names
+    try:
+        def count_land(self, request,name):
+            land_count = Land.objects.filter(name=name).order_by('-created').aggregate(Count('name'))
+            return Response(land_count)
     except Land.DoesNotExist:
             raise Http404
 
@@ -355,7 +393,7 @@ class LandDetails(generics.RetrieveUpdateDestroyAPIView):
 
 #pap_land
 # ViewSets define the view behavior.
-class PapLandView(APIView):
+class PapLandView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -366,7 +404,7 @@ class PapLandView(APIView):
     View to list all land belonging to a particular pap.
     """
     try:
-        def get(self, request,first_name,format=None):
+        def list(self, request,first_name,format=None):
             pap = ProjectAffectedPerson.objects.get(first_name=first_name)
             pap_land = Land.objects.filter(pap=pap).order_by('-rate')
             serializer = LandSerializer(pap_land, many=True)
@@ -379,12 +417,12 @@ class PapLandView(APIView):
         This view should return a list of all the paps
         for the currently authenticated user.
         """
-        owner = self.request.user
-        return Land.objects.filter(owner=owner).order_by('-rate')
+        user = self.request.user
+        return Land.objects.filter(user=user).order_by('-rate')
 
 #pap_trees
 # ViewSets define the view behavior.
-class PapTreeView(APIView):
+class PapTreeView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -395,7 +433,7 @@ class PapTreeView(APIView):
     View to list all trees belonging to a particular pap.
     """
     try:
-        def get(self, first_name):
+        def list(self, request, first_name):
             pap = ProjectAffectedPerson.objects.get(first_name=first_name)
             pap_trees = Tree.objects.filter(pap=pap).order_by('-created')
             serializer = TreeSerializer(pap_trees, many=True)
@@ -413,7 +451,7 @@ class PapTreeView(APIView):
 
 #pap_construction
 # ViewSets define the view behavior.
-class PapConstructionView(APIView):
+class PapConstructionView(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -424,7 +462,7 @@ class PapConstructionView(APIView):
     View to list all construction belonging to a particular pap.
     """
     try:
-        def get(self, request,first_name,format=None):
+        def list(self, request,first_name,format=None):
             pap = ProjectAffectedPerson.objects.get(first_name=first_name)
             pap_construction = ConstructionBuilding.objects.filter(pap=pap).order_by('-rate')
             serializer = ConstructionBuildingSerializer(pap_construction, many=True)

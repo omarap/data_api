@@ -188,7 +188,7 @@ class AwardView(generics.RetrieveAPIView):
         trees_value = total_value_trees.values()
         construction_value = total_value_construction.values()
         land_value = total_value_land.values()
-        
+       
         award = sum(crops_value) + sum(trees_value) + sum(construction_value) + sum(land_value)
         return Response(award)
 
