@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/land/<int:pk>/', views.LandDetail.as_view(), name='land-details'),
     path('api/land/<land_type>/', views.LandDetailNameView.as_view({'get': 'list'}), name='land-detail-name'),
     path('api/land/<land_type>/count', views.LandDetailNameView.as_view({'get': 'count_land'}), name='land-detail-name'),
-    path('api/papland/<first_name>/', views.PapLandView.as_view({'get': 'list'}), name='pap-land')
+    path('api/papland/<first_name>/', views.PapLandView.as_view({'get': 'list'}), name='pap-land'),
+    path('api/upload/', views.UploadFileView.as_view(), name='upload-file')
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

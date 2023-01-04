@@ -13,6 +13,8 @@ import django_filters.rest_framework
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import *
+from rest_framework import status
+import io, csv, pandas as pd
 
 @api_view(['GET'])
 def api_root(request, format = None):
@@ -105,9 +107,10 @@ class ConstructionBuildingList(generics.ListCreateAPIView):
         return ConstructionBuilding.objects.filter(owner=owner).order_by('-rate')
     
     def perform_create(self, serializer):
-        request = self.request.user
-        #serializer holds a django model
-        serializer.save(owner=self.request.user, context={'request': request})
+        owner = self.request.user
+        pap = ProjectAffectedPerson.objects.filter(owner=owner)        #serializer holds a django model
+        serializer.save(owner=owner, pap=pap)
+
 
 #construction details for construction object with id
 class ConstructionBuildingDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -167,8 +170,10 @@ class TreeList(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    def perform_create(self, serializer):
+    def perform_create(self, request, serializer):
         owner = self.request.user
+        request = request.user
+        serializer = TreeSerializer(data=request.data)
         #serializer holds a django model
         serializer.save(owner=owner)
 
@@ -479,6 +484,27 @@ class PapConstructionView(viewsets.ViewSet):
         return ConstructionBuilding.objects.filter(owner=owner).order_by('-rate')
     
 
-
-
+#CSV FILE UPLOADS
+class UploadFileView(generics.CreateAPIView):
+    serializer_class = FileUploadSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = ProjectAffectedPerson(
+                       id = row['id'],
+                       first_name= row["first_name"],
+                       last_name= row['last_name'],
+                       age= row["age"],
+                       address= row["address"],
+                       id_no= row["id_no"],
+                       email= row["email"],
+                       phone_number= row["phone_number"]
+                       )
+            new_file.save()
+        return Response({"status": "success"},
+                        status.HTTP_201_CREATED)
 

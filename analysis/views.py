@@ -19,7 +19,6 @@ from django.db.models.functions import *
 def Analysis_root(request, format = None):
    return Response({
       'number_of_crops': reverse('number-of-crops', request = request, format = format),
-      'total_crop_value': reverse('total-crop-value', request = request, format = format),
       'crops_rate_total': reverse('total-crops-rate', request = request, format = format),
       'minimum_crop_rate': reverse('minimum-crop-rate', request = request, format = format),
       'maximum_crop_rate': reverse('maximum-crop-rate', request = request, format = format),
@@ -140,7 +139,7 @@ class TotalLandValueView(generics.RetrieveAPIView):
             return Response(total_value)
 
 #Award View
-class AwardView(generics.RetrieveAPIView):
+class AwardView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = LandSerializer, CropSerializer, TreeSerializer, ConstructionBuildingSerializer
@@ -148,7 +147,7 @@ class AwardView(generics.RetrieveAPIView):
     queryset = Tree.objects.all().order_by('-created')
     queryset = Land.objects.all().order_by('-created')
     queryset = ConstructionBuilding.objects.all().order_by('-created')
-
+    
     def get(self, request, id):
         owner = self.request.user
         user = self.request.user
@@ -184,13 +183,18 @@ class AwardView(generics.RetrieveAPIView):
         land_value_difference = land_rate_value * land_size_value
         total_value_land = Land.objects.filter(user=user, pap=pap).aggregate(total_value_of_land =Sum(land_value_difference))
         #Award
+        def add(a, b, c, d):
+            return a + b + c + d
+            
         crops_value = total_value_crops.values()
         trees_value = total_value_trees.values()
         construction_value = total_value_construction.values()
         land_value = total_value_land.values()
+        #award = sum(crops_value) + sum(trees_value) + sum(construction_value) + sum(land_value)
+        award2 = add(a = sum(crops_value), b = sum(trees_value), c = sum(construction_value), d = sum(land_value))
+        return Response(award2)
+
        
-        award = sum(crops_value) + sum(trees_value) + sum(construction_value) + sum(land_value)
-        return Response(award)
 
 #Total rate of crops in the system
 class CropRateSumView(APIView):
