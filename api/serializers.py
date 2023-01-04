@@ -13,8 +13,9 @@ class UserPapForeignKey(serializers.SlugRelatedField):
         return pap
 
 class ConstructionBuildingSerializer(serializers.ModelSerializer):
-    pap = UserPapForeignKey(
-        slug_field='first_name'
+    pap = serializers.SlugRelatedField(
+        slug_field='first_name',
+        queryset=ProjectAffectedPerson.objects.all()
     )
     
     class Meta:
@@ -61,8 +62,9 @@ class LandSerializer(serializers.ModelSerializer):
                     'land_services', 'rate','value_of_land', 'created', 'updated']
 
 class TreeSerializer(serializers.ModelSerializer):
-    pap = UserPapForeignKey(
-        slug_field='first_name'
+    pap = serializers.SlugRelatedField(
+        slug_field='first_name',
+        queryset=ProjectAffectedPerson.objects.all()
     )
     
     class Meta:
