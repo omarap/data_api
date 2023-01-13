@@ -23,7 +23,8 @@ def api_root(request, format = None):
       'land': reverse('land-list', request = request, format = format),
       'construction': reverse('construction-list', request = request, format = format),
       'trees': reverse('tree-list', request = request, format = format),
-      'crops': reverse('crop-list', request = request, format = format)
+      'crops': reverse('crop-list', request = request, format = format),
+      'addcrops': reverse('crop-list-names', request = request, format = format)
    })
 
 #projected affected person
@@ -234,7 +235,44 @@ class TreeDetailNameView(viewsets.ViewSet):
         owner = self.request.user
         return Tree.objects.filter(owner=owner).order_by('-created')
 
+#Crop list names and rate
+class CropListName(generics.ListCreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = CropList.objects.all().order_by('-created')
+    serializer_class = CropListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def get_queryset(self):
+        """
+        This view should return a list of all the crop details
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        return CropList.objects.filter(owner=owner).order_by('-rating')
 
+    def perform_create(self,serializer):
+        serializer = CropSerializer(data=self.request.data, context={'request': self.request})
+        #serializer holds a django model
+        serializer.save(owner=self.request.user)
+        
+
+#crop details
+class CropListDetailName(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = CropList.objects.all().order_by('-created')
+    serializer_class = CropListSerialier
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the crop list details
+        for the currently authenticated user.
+        """
+        owner = self.request.user
+        return CropList.objects.filter(owner=owner).order_by('-rating')
 
 # Create your views here.
 # Crop list

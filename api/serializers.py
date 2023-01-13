@@ -29,6 +29,12 @@ class ConstructionBuildingSerializer(serializers.ModelSerializer):
         return ConstructionBuilding.objects.create(**validated_data)
 
 
+class CropListSerialier(serializers.ModelSerializer):
+    class Meta:
+        model = CropList
+        fields =['name', 'rate', 'district', 'created', 'updated']
+
+        
 class CropSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',

@@ -107,6 +107,9 @@ class CropList(models.Model):
     name = models.CharField(max_length=50)
     rate = models.PositiveIntegerField()
     district = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, related_name='crop_list_owners', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name} {self.rate} {self.district}"
