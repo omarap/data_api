@@ -29,7 +29,7 @@ urlpatterns = [
     path('api/land/<land_type>/', views.LandDetailNameView.as_view({'get': 'list'}), name='land-detail-name'),
     path('api/land/<land_type>/count/', views.LandDetailNameView.as_view({'get': 'count_land'}), name='land-detail-name'),
     path('api/papland/<first_name>/', views.PapLandView.as_view({'get': 'list'}), name='pap-land'),
-    path('api/upload/papcsv/', views.UploadFileView.as_view(), name='upload-file-csv'),
+    path('api/upload/papcsv/', views.UploadFileView.as_view(), name='upload-pap-file-csv'),
     path('api/upload/cropcsv/', views.UploadCropFileView.as_view(), name='upload-crop-file-csv')
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
