@@ -22,22 +22,18 @@ class ConstructionBuildingSerializer(serializers.ModelSerializer):
         model = ConstructionBuilding
         fields = ['pap', 'name','construction_image', 'size', 'number_of_construction','rate', 'value_of_structures','created', 'updated']
 
-    def validate(self, data):
-        if self.context['pap']:
-            return data
-
     def create(self, validated_data):
-        if self.context['pap']:
-            pap = self.context['pap']
-            validated_data['pap'] = pap
-        construction = ConstructionBuilding.objects.create(**validated_data)  # saving post object
-        return construction
+        """
+        Create and return a new `Crop` instance, given the validated data.
+        """
+        return ConstructionBuilding.objects.create(**validated_data)
 
 
 class CropSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
+
     )
     class Meta:
         model = Crop

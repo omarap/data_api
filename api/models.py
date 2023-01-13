@@ -12,7 +12,7 @@ class ProjectAffectedPerson(models.Model):
     last_name = models.CharField(max_length=50)
     age = models.PositiveIntegerField()
     address = models.CharField(max_length=128)
-    id_no = models.CharField(max_length=100, unique=True)
+    nin = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=20, unique=True)
     phone_number = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
@@ -103,7 +103,13 @@ class Tree(models.Model):
     def value_of_trees(self):
         return self.quantity * self.rate
    
+class CropList(models.Model):
+    name = models.CharField(max_length=50)
+    rate = models.PositiveIntegerField()
+    district = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        return f"{self.name} {self.rate} {self.district}"
 
 # Class model for crop
 class Crop(models.Model):
@@ -123,6 +129,7 @@ class Crop(models.Model):
         ('Immature_good', 'Immature_good'),
         ('Immature', 'Immature'),
     ]
+    '''
     CROP_NAMES = [
     ('Bananas', (
             ('sweet bananas', 'sweet bananas'),
@@ -164,7 +171,8 @@ class Crop(models.Model):
     ),
 ]
 
-    name = models.CharField(max_length=20, choices=CROP_NAMES, default='beans')
+    '''
+    name = models.ForeignKey(CropList, related_name='crop_list', on_delete=models.CASCADE )
     crop_image = models.ImageField(upload_to='crop_uploads', blank=True)
     description = models.CharField(max_length=50, blank=True)
     quantity = models.PositiveIntegerField()

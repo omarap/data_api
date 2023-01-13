@@ -255,9 +255,11 @@ class CropList(generics.ListCreateAPIView):
         owner = self.request.user
         return Crop.objects.filter(owner=owner).order_by('-rating')
 
-    def perform_create(self, serializer):
+    def perform_create(self,serializer):
+        serializer = CropSerializer(data=self.request.data, context={'request': self.request})
         #serializer holds a django model
         serializer.save(owner=self.request.user)
+        
 
 #crop details
 class CropDetail(generics.RetrieveUpdateDestroyAPIView):
