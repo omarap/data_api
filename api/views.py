@@ -245,18 +245,11 @@ class CropListName(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
     
-    def get_queryset(self):
-        """
-        This view should return a list of all the crop details
-        for the currently authenticated user.
-        """
-        owner = self.request.user
-        return CropList.objects.filter(owner=owner).order_by('-rating')
 
-    def perform_create(self,serializer):
-        serializer = CropSerializer(data=self.request.data, context={'request': self.request})
+    def perform_create(self, serializer):
+        owner = self.request.user
         #serializer holds a django model
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=owner)
         
 
 #crop details
@@ -265,14 +258,11 @@ class CropListDetailName(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = CropList.objects.all().order_by('-created')
     serializer_class = CropListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
-    def get_queryset(self):
-        """
-        This view should return a list of all the crop list details
-        for the currently authenticated user.
-        """
-        owner = self.request.user
-        return CropList.objects.filter(owner=owner).order_by('-rating')
+    
 
 # Create your views here.
 # Crop list
@@ -293,11 +283,10 @@ class CropList(generics.ListCreateAPIView):
         owner = self.request.user
         return Crop.objects.filter(owner=owner).order_by('-rating')
 
-    def perform_create(self,serializer):
-        serializer = CropSerializer(data=self.request.data, context={'request': self.request})
+    def perform_create(self, serializer):
+        owner = self.request.user
         #serializer holds a django model
-        serializer.save(owner=self.request.user)
-        
+        serializer.save(owner=owner)
 
 #crop details
 class CropDetail(generics.RetrieveUpdateDestroyAPIView):

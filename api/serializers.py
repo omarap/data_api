@@ -33,8 +33,14 @@ class CropListSerialier(serializers.ModelSerializer):
     class Meta:
         model = CropList
         fields =['name', 'rate', 'district', 'created', 'updated']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `CropList` instance, given the validated data.
+        """
+        return CropList.objects.create(**validated_data)
 
-        
+
 class CropSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',
@@ -88,7 +94,7 @@ class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectAffectedPerson
         fields = ['id','first_name', 'last_name', 'pap_image','age', 'address', 
-        'id_no','email','phone_number','pap_crops','pap_lands','pap_trees',
+        'nin','email','phone_number','pap_crops','pap_lands','pap_trees',
         'pap_construction','created', 'updated']
 
     def create(self, validated_data):
