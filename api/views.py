@@ -245,7 +245,7 @@ class CropListName(generics.ListCreateAPIView):
     serializer_class = CropListSerialier
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    search_fields = ['name', 'district']
     
 
     def perform_create(self, serializer):
@@ -262,7 +262,7 @@ class CropListDetailName(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CropListSerialier
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    search_fields = ['name', 'district']
 
     
 
