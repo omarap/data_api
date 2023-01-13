@@ -20,7 +20,7 @@ class ProjectAffectedPerson(models.Model):
     owner = models.ForeignKey(User, related_name='owners', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} {self.id_no}"
+        return f"{self.first_name} {self.last_name} {self.nin}"
     
    
 class ConstructionBuilding(models.Model):
