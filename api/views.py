@@ -24,7 +24,9 @@ def api_root(request, format = None):
       'construction': reverse('construction-list', request = request, format = format),
       'trees': reverse('tree-list', request = request, format = format),
       'crops': reverse('crop-list', request = request, format = format),
-      'addcrops': reverse('crop-list-names', request = request, format = format)
+      'addcrops': reverse('crop-list-names', request = request, format = format),
+      'upload_pap_csv_file': reverse('upload-file', request = request, format = format),
+      'upload_crops_csv_file': reverse('crop-upload-file', request = request, format = format)
    })
 
 #projected affected person
@@ -532,6 +534,26 @@ class UploadFileView(generics.CreateAPIView):
                        id_no= row["id_no"],
                        email= row["email"],
                        phone_number= row["phone_number"]
+                       )
+            new_file.save()
+        return Response({"status": "success"},
+                        status.HTTP_201_CREATED)
+
+
+#Crop CSV FILE UPLOADS
+class UploadCropFileView(generics.CreateAPIView):
+    serializer_class = CropUploadSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = CropList(
+                       name= row["name"],
+                       rate= row['rate'],
+                       district= row["district"]
                        )
             new_file.save()
         return Response({"status": "success"},

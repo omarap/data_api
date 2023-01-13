@@ -118,6 +118,16 @@ class SaveFileSerializer(serializers.Serializer):
     class Meta:
         model = ProjectAffectedPerson
         fields = "__all__"
+
+#CROPS CSV Uploads
+class CropUploadSerializer(serializers.Serializer):
+        file = serializers.FileField()
+
+class SaveCropFileSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = CropList
+        fields = "__all__"
     
 
 
