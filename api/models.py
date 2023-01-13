@@ -173,9 +173,8 @@ class Crop(models.Model):
         )
     ),
 ]
-
     '''
-    name = models.ForeignKey(CropList, related_name='crop_list', on_delete=models.CASCADE )
+    crop_name = models.ForeignKey(CropList, related_name='crop_list', on_delete=models.CASCADE )
     crop_image = models.ImageField(upload_to='crop_uploads', blank=True)
     description = models.CharField(max_length=50, blank=True)
     quantity = models.PositiveIntegerField()

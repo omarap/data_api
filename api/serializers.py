@@ -30,6 +30,7 @@ class ConstructionBuildingSerializer(serializers.ModelSerializer):
 
 
 class CropListSerialier(serializers.ModelSerializer):
+    
     class Meta:
         model = CropList
         fields =['name', 'rate', 'district', 'created', 'updated']
@@ -47,9 +48,14 @@ class CropSerializer(serializers.ModelSerializer):
         queryset=ProjectAffectedPerson.objects.all()
 
     )
+    crop_name = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=CropList.objects.all()
+
+    )
     class Meta:
         model = Crop
-        fields = ['name', 'crop_image','description', 'quantity', 'quality', 'rate', 'rating', 
+        fields = ['crop_name', 'crop_image','description', 'quantity', 'quality', 'rate', 'rating', 
         'pap','value_of_crops','created', 'updated']
 
     def create(self, validated_data):
