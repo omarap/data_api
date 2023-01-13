@@ -25,7 +25,7 @@ def api_root(request, format = None):
       'trees': reverse('tree-list', request = request, format = format),
       'crops': reverse('crop-list', request = request, format = format),
       'addcrops': reverse('crop-list-names', request = request, format = format),
-      'upload_pap_csv_file': reverse('upload-pap-file_csv', request = request, format = format),
+      'upload_pap_csv_file': reverse('upload-pap-file-csv', request = request, format = format),
       'upload_crops_csv_file': reverse('upload-crop-file-csv', request = request, format = format)
    })
 
