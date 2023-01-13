@@ -517,6 +517,8 @@ class PapConstructionView(viewsets.ViewSet):
 
 #CSV FILE UPLOADS
 class UploadFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FileUploadSerializer
     
     def create(self, request, *args, **kwargs):
@@ -542,6 +544,8 @@ class UploadFileView(generics.CreateAPIView):
 
 #Crop CSV FILE UPLOADS
 class UploadCropFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = CropUploadSerializer
     
     def create(self, request, *args, **kwargs):
