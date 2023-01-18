@@ -12,10 +12,26 @@ class UserPapForeignKey(serializers.SlugRelatedField):
         pap = ProjectAffectedPerson.objects.filter(owner = self.context.get("request").user).order_by('-created')[:6]
         return pap
 
+class ConstructionListSerialier(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ConstructionList
+        fields =['name', 'created', 'updated']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `ConstructionList` instance, given the validated data.
+        """
+        return ConstructionList.objects.create(**validated_data)
+
 class ConstructionBuildingSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
+    )
+    name = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=ConstructionList.objects.all()
     )
     
     class Meta:
@@ -64,10 +80,42 @@ class CropSerializer(serializers.ModelSerializer):
         """
         return Crop.objects.create(**validated_data)
 
+class LandListSerialier(serializers.ModelSerializer):
+    
+    class Meta:
+        model = LandList
+        fields =['name', 'created', 'updated']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `LandList` instance, given the validated data.
+        """
+        return LandList.objects.create(**validated_data)
+
+class TenureTypeSerialier(serializers.ModelSerializer):
+    
+    class Meta:
+        model = TenureType
+        fields =['name','created', 'updated']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `Tenure Type` instance, given the validated data.
+        """
+        return TenureType.objects.create(**validated_data)
+
 class LandSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
+    )
+    land_type = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=LandList.objects.all()
+    )
+    tenure = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=TenureType.objects.all()
     )
 
     class Meta:
@@ -75,10 +123,26 @@ class LandSerializer(serializers.ModelSerializer):
         fields = ['land_type', 'land_image','survey_no', 'pap','tenure', 'size', 'location', 'land_use', 
                     'land_services', 'rate','value_of_land', 'created', 'updated']
 
+class TreeListSerialier(serializers.ModelSerializer):
+    
+    class Meta:
+        model = TreeList
+        fields =['name', 'rate', 'district', 'created', 'updated']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `TreeList` instance, given the validated data.
+        """
+        return TreeList.objects.create(**validated_data)
+
 class TreeSerializer(serializers.ModelSerializer):
     pap = serializers.SlugRelatedField(
         slug_field='first_name',
         queryset=ProjectAffectedPerson.objects.all()
+    )
+    name = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=TreeList.objects.all()
     )
     
     class Meta:

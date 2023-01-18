@@ -58,6 +58,7 @@ class ConstructionBuilding(models.Model):
 class TreeList(models.Model):
     name = models.CharField(max_length=100)
     rate = models.PositiveIntegerField(default=0, blank=True)
+    district = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

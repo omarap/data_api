@@ -91,7 +91,33 @@ class ProjectAffectedPersonNameView(viewsets.ViewSet):
         owner = self.request.user
         return ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
 
-#Construction list
+#Construction list names
+class ConstructionListName(generics.ListCreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = ConstructionList.objects.all().order_by('-created')
+    serializer_class = ConstructionListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def perform_create(self, serializer):
+        owner = self.request.user
+        #serializer holds a django model
+        serializer.save(owner=owner)
+        
+#crop details
+class ConstructionListDetailName(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = ConstructionList.objects.all().order_by('-created')
+    serializer_class = ConstructionListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+    
+#list of constructions
 class ConstructionBuildingList(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -99,7 +125,6 @@ class ConstructionBuildingList(generics.ListCreateAPIView):
     serializer_class = ConstructionBuildingSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
-
 
     def get_queryset(self):
         """
@@ -113,6 +138,7 @@ class ConstructionBuildingList(generics.ListCreateAPIView):
         owner = self.request.user
         pap = ProjectAffectedPerson.objects.filter(owner=owner)        #serializer holds a django model
         serializer.save(owner=owner, pap=pap)
+
 
 
 #construction details for construction object with id
@@ -164,7 +190,32 @@ class ConstructionDetailNameView(viewsets.ViewSet):
         owner = self.request.user
         return ConstructionBuilding.objects.filter(owner=owner).order_by('-created')
 
-#Trees list
+#tree list names
+class TreeListName(generics.ListCreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = TreeList.objects.all().order_by('-created')
+    serializer_class = TreeListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def perform_create(self, serializer):
+        owner = self.request.user
+        #serializer holds a django model
+        serializer.save(owner=owner)
+        
+#tree details name
+class TreeListDetailName(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = TreeList.objects.all().order_by('-created')
+    serializer_class = TreeListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+#list of trees
 class TreeList(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -190,7 +241,7 @@ class TreeList(generics.ListCreateAPIView):
 
    
     
-#tree details for a tree    
+#tree details  
 class TreeDetail(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -364,8 +415,32 @@ class PapCrop(viewsets.ViewSet):
         owner = self.request.user
         return ProjectAffectedPerson.objects.filter(owner=owner).order_by('-created')
     
+#land list names
+class LandListName(generics.ListCreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = LandList.objects.all().order_by('-created')
+    serializer_class = LandListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def perform_create(self, serializer):
+        owner = self.request.user
+        #serializer holds a django model
+        serializer.save(owner=owner)
+        
+#land details name
+class LandListDetailName(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = LandList.objects.all().order_by('-created')
+    serializer_class = LandListSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
-#land list
+#list of land
 class LandList(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
