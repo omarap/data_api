@@ -173,6 +173,8 @@ class ProjectAffectedPersonSerializer(serializers.ModelSerializer):
         """
         return ProjectAffectedPerson.objects.create(**validated_data)
 
+
+#CSV FILES UPLOADS
 #CSV File Uploads
 class FileUploadSerializer(serializers.Serializer):
         file = serializers.FileField()
@@ -181,7 +183,9 @@ class SaveFileSerializer(serializers.Serializer):
     
     class Meta:
         model = ProjectAffectedPerson
-        fields = "__all__"
+        fields = fields = ['id','first_name', 'last_name', 'pap_image','age', 'address', 
+        'nin','email','phone_number']
+
 
 #CROPS CSV Uploads
 class CropUploadSerializer(serializers.Serializer):
@@ -191,7 +195,51 @@ class SaveCropFileSerializer(serializers.Serializer):
     
     class Meta:
         model = CropList
-        fields = "__all__"
+        fields =  fields =['name', 'rate', 'district']
+
+#LAND LIST NAMES CSV Uploads
+class LandUploadSerializer(serializers.Serializer):
+        file = serializers.FileField()
+
+class SaveLandFileSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = LandList
+        fields =  fields =['name']
+
+#LAND TUNURE NAMES CSV Uploads
+class TenureTypeUploadSerializer(serializers.Serializer):
+        file = serializers.FileField()
+
+class SaveTenureTypeFileSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = TenureType
+        fields =  fields =['name']
+
+#Construction Names CSV Uploads
+class ConstructionNameListUploadSerializer(serializers.Serializer):
+        file = serializers.FileField()
+
+class SaveConstructionNameListFileSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = ConstructionList
+        fields =  fields =['name']
+
+#TREES CSV Uploads
+class TreeUploadSerializer(serializers.Serializer):
+        file = serializers.FileField()
+
+class SaveTreeFileSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = TreeList
+        fields =  fields =['name', 'rate', 'district']
+    
+    
+    
+    
     
 
 

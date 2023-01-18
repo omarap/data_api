@@ -30,7 +30,11 @@ def api_root(request, format = None):
       'trees': reverse('tree-list', request = request, format = format),
       'crops': reverse('crop-list', request = request, format = format),
       'upload_pap_csv_file': reverse('upload-pap-file-csv', request = request, format = format),
-      'upload_crops_csv_file': reverse('upload-crop-file-csv', request = request, format = format)
+      'upload_crops_csv_file': reverse('upload-crop-file-csv', request = request, format = format),
+      'upload_construction_csv_file': reverse('upload-construction-file-csv', request = request, format = format),
+      'upload_trees_csv_file': reverse('upload-trees-file-csv', request = request, format = format),
+      'upload_tenure_csv_file': reverse('upload-tenure-file-csv', request = request, format = format),
+      'upload_land_csv_file': reverse('upload-land-file-csv', request = request, format = format)
    })
 
 #projected affected person
@@ -665,4 +669,84 @@ class UploadCropFileView(generics.CreateAPIView):
             new_file.save()
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)
+
+#Construction CSV FILE UPLOADS
+class UploadConstructionFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = ConstructionNameListUploadSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = ConstructionList(
+                       name= row["name"]
+                       )
+            new_file.save()
+        return Response({"status": "success"},
+                        status.HTTP_201_CREATED)
+
+#Tree CSV FILE UPLOADS
+class UploadTreeFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = TreeUploadSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = TreeList(
+                       name= row["name"],
+                       rate= row["rate"],
+                       district= row["district"]
+                       )
+            new_file.save()
+        return Response({"status": "success"},
+                        status.HTTP_201_CREATED)
+
+#Tenure CSV FILE UPLOADS
+class UploadTenureFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = TenureTypeUploadSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = TenureType(
+                       name= row["name"],
+                       )
+            new_file.save()
+        return Response({"status": "success"},status.HTTP_201_CREATED)
+
+
+#Land CSV FILE UPLOADS
+class UploadLandFileView(generics.CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = LandUploadSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data['file']
+        reader = pd.read_csv(file)
+        for _, row in reader.iterrows():
+            new_file = LandList(
+                       name= row["name"],
+                       )
+            new_file.save()
+        return Response({"status": "success"},status.HTTP_201_CREATED)
+
+
+
 
