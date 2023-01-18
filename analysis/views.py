@@ -55,7 +55,7 @@ class CropAnalysisView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         number_of_crops = Crop.objects.all().aggregate(Count('name'))
         return Response(number_of_crops)
 
@@ -201,7 +201,7 @@ class CropRateSumView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         total_crops_rate = Crop.objects.all().aggregate(Sum('rate'))
         return Response(total_crops_rate)
 
@@ -210,7 +210,7 @@ class MinimumCropRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_crop_rate = Crop.objects.all().aggregate(Min('rate'))
         return Response(minimum_crop_rate)
 
@@ -219,7 +219,7 @@ class MaximumCropRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_crop_rate = Crop.objects.all().aggregate(Max('rate'))
         return Response(minimum_crop_rate)
 
@@ -228,7 +228,7 @@ class AverageCropRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         average_crop_price = Crop.objects.all().aggregate(Avg('rate'))
         return Response(average_crop_price)
 
@@ -237,7 +237,7 @@ class CropRateDifferenceView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request,  format=None):
         rate_difference = Crop.objects.all().aggregate(Avg('rate'), Max('rate'), Min('rate'))
         return Response(rate_difference)
 
@@ -249,7 +249,7 @@ class CropRatingHighView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         maximum_crop_ratings = Crop.objects.all().aggregate(Max('rating'))
         return Response(maximum_crop_ratings)
 
@@ -258,7 +258,7 @@ class CropRatingLowView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_crop_ratings = Crop.objects.all().aggregate(Min('rating'))
         return Response(minimum_crop_ratings)
 
@@ -267,7 +267,7 @@ class CropRatingAverageView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         average_crop_ratings = Crop.objects.all().aggregate(Avg('rating'))
         return Response(average_crop_ratings)
 
@@ -276,7 +276,7 @@ class CropRatingDifferenceView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         crop_rating_difference = Crop.objects.all().aggregate(Avg('rating'), Max('rating'), Min('rating'))
         return Response(crop_rating_difference)
 
@@ -287,7 +287,7 @@ class LandAnalysisView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         number_of_land = Land.objects.all().aggregate(Count('id'))
         return Response(number_of_land)
 
@@ -296,7 +296,7 @@ class LandRateSumView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         total_land_rate = Land.objects.all().aggregate(Sum('rate'))
         return Response(total_land_rate)
 
@@ -305,7 +305,7 @@ class MinimumLandRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_land_rate = Land.objects.all().aggregate(Min('rate'))
         return Response(minimum_land_rate)
 
@@ -314,7 +314,7 @@ class MaximumLandRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_land_rate = Land.objects.all().aggregate(Max('rate'))
         return Response(minimum_land_rate)
 
@@ -323,7 +323,7 @@ class AverageLandRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         average_land_rate = Land.objects.all().aggregate(Avg('rate'))
         return Response(average_land_rate)
 
@@ -332,7 +332,7 @@ class LandRateDifferenceView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         land_rate_difference = Land.objects.all().aggregate(Avg('rate'), Max('rate'), Min('rate'))
         return Response(land_rate_difference)
 
@@ -343,7 +343,7 @@ class ConstructionAnalysisView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         number_of_construction = ConstructionBuilding.objects.all().aggregate(Count('id'))
         return Response(number_of_construction)
 
@@ -352,7 +352,7 @@ class ConstructionRateSumView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         total_construction_rate = ConstructionBuilding.objects.all().aggregate(Sum('rate'))
         return Response(total_construction_rate)
 
@@ -361,7 +361,7 @@ class MinimumConstructionRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_construction_rate = ConstructionBuilding.objects.all().aggregate(Min('rate'))
         return Response(minimum_construction_rate)
 
@@ -370,7 +370,7 @@ class MaximumConstructionRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_construction_rate = ConstructionBuilding.objects.all().aggregate(Max('rate'))
         return Response(minimum_construction_rate)
 
@@ -379,7 +379,7 @@ class AverageConstructionRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         average_construction_rate = ConstructionBuilding.objects.all().aggregate(Avg('rate'))
         return Response(average_construction_rate)
 
@@ -388,7 +388,7 @@ class ConstructionRateDifferenceView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         construction_rate_difference = ConstructionBuilding.objects.all().aggregate(Avg('rate'), Max('rate'), Min('rate'))
         return Response(construction_rate_difference)
 
@@ -399,7 +399,7 @@ class TreeAnalysisView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         number_of_trees = Tree.objects.all().aggregate(Count('id'))
         return Response(number_of_trees)
 
@@ -408,7 +408,7 @@ class TreeRateSumView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         total_tree_rate = Tree.objects.all().aggregate(Sum('rate'))
         return Response(total_tree_rate)
 
@@ -417,7 +417,7 @@ class MinimumTreeRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_tree_rate = Tree.objects.all().aggregate(Min('rate'))
         return Response(minimum_tree_rate)
 
@@ -426,7 +426,7 @@ class MaximumTreeRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         minimum_tree_rate = Tree.objects.all().aggregate(Max('rate'))
         return Response(minimum_tree_rate)
 
@@ -435,7 +435,7 @@ class AverageTreeRateView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self,request, format=None):
         average_tree_rate = Tree.objects.all().aggregate(Avg('rate'))
         return Response(average_tree_rate)
 
@@ -444,7 +444,7 @@ class TreeRateDifferenceView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, format=None):
+    def get(self, request, format=None):
         tree_rate_difference = Tree.objects.all().aggregate(Avg('rate'), Max('rate'), Min('rate'))
         return Response(tree_rate_difference)
 

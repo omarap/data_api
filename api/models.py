@@ -21,9 +21,15 @@ class ProjectAffectedPerson(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.nin}"
-    
-   
+
+class ConstructionList(models.Model):
+    name = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
 class ConstructionBuilding(models.Model):
+    """
     CONSTRUCTION_TYPES = [
     ('Fire-resistive', 'Fire-resistive'),
     ('Non-combustible', 'Non-combustible'),
@@ -31,8 +37,9 @@ class ConstructionBuilding(models.Model):
     ('Heavy timber', 'Heavy timber'),
     ('Wood-framed', 'Wood-framed')
     ]
+    """
     pap = models.ForeignKey(ProjectAffectedPerson, related_name='pap_construction',on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, choices=CONSTRUCTION_TYPES)
+    name = models.ForeignKey(ConstructionList, related_name='list_of_construction', on_delete=models.CASCADE)
     construction_image = models.ImageField(upload_to='construction_uploads', blank=True)
     size = models.FloatField(default=0)
     number_of_construction = models.PositiveSmallIntegerField(default=0)
@@ -48,8 +55,16 @@ class ConstructionBuilding(models.Model):
     def value_of_structures(self):
         return self.size * self.number_of_construction * self.rate
    
+class TreeList(models.Model):
+    name = models.CharField(max_length=100)
+    rate = models.PositiveIntegerField(default=0, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class Tree(models.Model):
+    """
     TREE_TYPES= [
         ('apple_tree', 'apple_tree'),
         ('mango_tree', 'mango_tree'),
@@ -85,8 +100,10 @@ class Tree(models.Model):
         ('teak_tree', 'teak_tree'),
         ('others', 'others(add in description)')
     ]
+
+    """
     pap = models.ForeignKey(ProjectAffectedPerson, related_name='pap_trees',on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, choices=TREE_TYPES)
+    name = models.ForeignKey(TreeList, related_name = 'list_of_trees',on_delete=models.CASCADE)
     description = models.CharField(max_length=50, blank=True)
     tree_image = models.ImageField(upload_to='tree_uploads', blank=True)
     quantity = models.PositiveSmallIntegerField(default=0)
@@ -116,16 +133,6 @@ class CropList(models.Model):
 
 # Class model for crop
 class Crop(models.Model):
-    RATING_CHOICES = (
-        (4, '4'),
-        (5, '5'),
-        (6, '6'),
-        (7, '7'),
-        (8, '8'),
-        (9, '9'),
-        (10, '10')
-    )
-
     QUALITY_CHOICES= [
         ('Mature_good', 'Mature_good'),
         ('Mature', 'Mature'),
@@ -180,7 +187,6 @@ class Crop(models.Model):
     quantity = models.PositiveIntegerField()
     quality = models.CharField(max_length=20, choices = QUALITY_CHOICES)
     rate = models.PositiveIntegerField()
-    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES, default=5)
     pap = models.ForeignKey(ProjectAffectedPerson, related_name='pap_crops',on_delete=models.CASCADE)
     owner = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -194,8 +200,20 @@ class Crop(models.Model):
         return self.quantity * self.rate
 
    
+class LandList(models.Model):
+    name = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class TenureType(models.Model):
+    name = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Land(models.Model):
+    """
     LAND_TYPES= (
         ('Urban/Built-up Land', 'Urban/Built-up Land'),
         ('Agricultural Land', 'Agricultural Land'),
@@ -209,18 +227,20 @@ class Land(models.Model):
         ('Others(add in description)', 'Others(add in description)')
 
     )
-
+    """
+    """
     TENURE_TYPES= (
         ('Mailo Land', 'Mailo Land'),
         ('Freehold Land', 'Freehold Land'),
         ('Lease Land', 'Lease Land'),
         ('Customary Land', 'Customary Land')
     )
-    land_type = models.CharField(max_length=40, choices = LAND_TYPES)
+    """
+    land_type = models.ForeignKey(LandList, related_name='list_of_land', on_delete=models.CASCADE)
     land_image = models.ImageField(upload_to='land_uploads', blank=True)
     survey_no = models.CharField(max_length=200, blank=True, unique=True, null=True)
     pap = models.ForeignKey(ProjectAffectedPerson, related_name='pap_lands', on_delete=models.CASCADE)
-    tenure = models.CharField(max_length=20, choices = TENURE_TYPES)
+    tenure = models.ForeignKey(TenureType, related_name='tenure_types', on_delete=models.CASCADE)
     size = models.FloatField(blank=True)
     location = models.CharField(max_length=255)
     land_use = models.TextField(blank=True,)

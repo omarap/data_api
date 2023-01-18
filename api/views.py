@@ -271,7 +271,7 @@ class CropListDetailName(generics.RetrieveUpdateDestroyAPIView):
 class CropList(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Crop.objects.all().order_by('-rating')
+    queryset = Crop.objects.all().order_by('-created')
     serializer_class = CropSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filter_backends = [filters.SearchFilter]
@@ -283,7 +283,7 @@ class CropList(generics.ListCreateAPIView):
         for the currently authenticated user.
         """
         owner = self.request.user
-        return Crop.objects.filter(owner=owner).order_by('-rating')
+        return Crop.objects.filter(owner=owner).order_by('-created')
 
     def perform_create(self, serializer):
         owner = self.request.user
@@ -294,7 +294,7 @@ class CropList(generics.ListCreateAPIView):
 class CropDetail(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Crop.objects.all().order_by('-rating')
+    queryset = Crop.objects.all().order_by('-created')
     serializer_class = CropSerializer
 
     def get_queryset(self):
@@ -303,7 +303,7 @@ class CropDetail(generics.RetrieveUpdateDestroyAPIView):
         for the currently authenticated user.
         """
         owner = self.request.user
-        return Crop.objects.filter(owner=owner).order_by('-rating')
+        return Crop.objects.filter(owner=owner).order_by('-created')
 
 #crop details details with name
 class CropDetailNameView(viewsets.ViewSet):

@@ -55,7 +55,7 @@ class CropSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Crop
-        fields = ['crop_name', 'crop_image','description', 'quantity', 'quality', 'rate', 'rating', 
+        fields = ['crop_name', 'crop_image','description', 'quantity', 'quality', 'rate',
         'pap','value_of_crops','created', 'updated']
 
     def create(self, validated_data):
