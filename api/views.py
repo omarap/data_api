@@ -20,11 +20,15 @@ import io, csv, pandas as pd
 def api_root(request, format = None):
    return Response({
       'paps': reverse('pap-list', request = request, format = format),
+      'land_names': reverse('land-list-name', request = request, format = format),
+      'land_tenure_types': reverse('tenure-types', request = request, format = format),
+      'crop_names': reverse('crop-list-names', request = request, format = format),
+      'construction_names': reverse('construction-list-name', request = request, format = format),
+      'tree_names': reverse('tree-list-name', request = request, format = format),
       'land': reverse('land-list', request = request, format = format),
       'construction': reverse('construction-list', request = request, format = format),
       'trees': reverse('tree-list', request = request, format = format),
       'crops': reverse('crop-list', request = request, format = format),
-      'addcrops': reverse('crop-list-names', request = request, format = format),
       'upload_pap_csv_file': reverse('upload-pap-file-csv', request = request, format = format),
       'upload_crops_csv_file': reverse('upload-crop-file-csv', request = request, format = format)
    })
@@ -239,8 +243,6 @@ class TreeList(generics.ListCreateAPIView):
         owner = self.request.user
         return Tree.objects.filter(owner=owner).order_by('-rate')
 
-   
-    
 #tree details  
 class TreeDetail(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -439,6 +441,32 @@ class LandListDetailName(generics.RetrieveUpdateDestroyAPIView):
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+
+#tenure types
+class TenureList(generics.ListCreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = TenureType.objects.all().order_by('-created')
+    serializer_class = TenureTypeSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def perform_create(self, serializer):
+        owner = self.request.user
+        #serializer holds a django model
+        serializer.save(owner=owner)
+        
+#tenure type details
+class TenureDetail(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = TenureType.objects.all().order_by('-created')
+    serializer_class = TenureTypeSerialier
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
 
 #list of land
 class LandList(generics.ListCreateAPIView):
