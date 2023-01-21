@@ -198,14 +198,21 @@ class SaveCropFileSerializer(serializers.Serializer):
         fields =  fields =['name', 'rate', 'district']
 
 #LAND LIST NAMES CSV Uploads
-class LandUploadSerializer(serializers.Serializer):
+class LandListUploadSerializer(serializers.Serializer):
         file = serializers.FileField()
 
-class SaveLandFileSerializer(serializers.Serializer):
+class SaveLandListFileSerializer(serializers.Serializer):
     
     class Meta:
         model = LandList
         fields =  fields =['name']
+
+    def create(self, validated_data):
+        """
+        Create and return a new `LandList` instance, given the validated data.
+        """
+        return LandList.objects.create(**validated_data)
+
 
 #LAND TUNURE NAMES CSV Uploads
 class TenureTypeUploadSerializer(serializers.Serializer):
@@ -216,6 +223,12 @@ class SaveTenureTypeFileSerializer(serializers.Serializer):
     class Meta:
         model = TenureType
         fields =  fields =['name']
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `TenureType` instance, given the validated data.
+        """
+        return TenureType.objects.create(**validated_data)
 
 #Construction Names CSV Uploads
 class ConstructionNameListUploadSerializer(serializers.Serializer):

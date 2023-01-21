@@ -26,8 +26,7 @@ class ConstructionList(models.Model):
     name = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-
+   
 class ConstructionBuilding(models.Model):
     """
     CONSTRUCTION_TYPES = [
@@ -61,8 +60,7 @@ class TreeList(models.Model):
     district = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-
+   
 
 class Tree(models.Model):
     """
@@ -127,7 +125,6 @@ class CropList(models.Model):
     district = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, related_name='crop_list_owners', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name} {self.rate} {self.district}"
@@ -205,13 +202,12 @@ class LandList(models.Model):
     name = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    
 
 class TenureType(models.Model):
     name = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Land(models.Model):
     """

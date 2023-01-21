@@ -2,6 +2,7 @@ from django.shortcuts import render
 from api.models import *
 from api.serializers import *
 from rest_framework.renderers import *
+from rest_framework.parsers import *
 from rest_framework import viewsets
 from django.http import Http404
 from rest_framework.views import APIView
@@ -715,8 +716,10 @@ class UploadTenureFileView(generics.CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = TenureTypeUploadSerializer
+
     
     def create(self, request, *args, **kwargs):
+        owner = self.request.user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data['file']
@@ -730,23 +733,18 @@ class UploadTenureFileView(generics.CreateAPIView):
 
 
 #Land CSV FILE UPLOADS
-class UploadLandFileView(generics.CreateAPIView):
+class UploadLandListFileView(generics.CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    serializer_class = LandUploadSerializer
-    
+    serializer_class = LandListUploadSerializer
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         file = serializer.validated_data['file']
         reader = pd.read_csv(file)
         for _, row in reader.iterrows():
-            new_file = LandList(
-                       name= row["name"],
-                       )
+            new_file = LandList(name = row['name'])
             new_file.save()
         return Response({"status": "success"},status.HTTP_201_CREATED)
-
-
-
 
